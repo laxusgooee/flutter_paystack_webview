@@ -39,12 +39,46 @@ class _HTMLViewState extends State<HTMLView> {
           </head>
           <body style="background-color:#fff;height:100vh">
             <script>
-              function payWithPaystack() {
+              async function payWithPaystack() {
                 const accessCode = window.accessCode;
-
-                console.log('>>>>>>>>>>>>' + accessCode);
                 
                 const popup = new PaystackPop();
+
+                const popupIframes = document.querySelectorAll(
+                  'iframe[src="https://checkout.paystack.com/popup"]'
+                );
+
+                if (popupIframes.length > 0) {
+                let timeoutId;
+
+                  const lastContainer = popupIframes[popupIframes.length - 1];
+
+                  // Create a MutationObserver instance
+                  const observer = new MutationObserver((mutationsList) => {
+                    for (const mutation of mutationsList) {
+                      
+                      if (
+                        mutation.type === "attributes" &&
+                        mutation.attributeName === "style"
+                      ) {
+                        if (lastContainer.style['display'] == 'none' && lastContainer.style['visibility'] == 'hidden') {
+                          
+                          clearTimeout(timeoutId);
+                          timeoutId = setTimeout(() => {
+                            window.flutter_inappwebview.callHandler('closePaymentHandler');
+                          }, 50);
+                        }
+                      }
+                    }
+                  });
+
+                  // Configure the observer to watch for attribute changes
+                  observer.observe(lastContainer, {
+                    attributes: true,
+                    attributeFilter: ["style"],
+                  });
+                }
+
                 popup.resumeTransaction(accessCode);
               }
             </script>
@@ -52,6 +86,17 @@ class _HTMLViewState extends State<HTMLView> {
           </html>
           """,
         ),
+        onWebViewCreated: (controller) {
+          webViewController = controller;
+          
+          controller.addJavaScriptHandler(
+            handlerName: 'closePaymentHandler',
+            callback: (args) {
+              Navigator.of(context).pop();
+              return true;
+            },
+          );
+        },
         onLoadStop: (controller, url) {
           controller.evaluateJavascript(source: """
 window.accessCode = '${widget.paymentSheetParameters?.accessCode}';
@@ -61,6 +106,7 @@ window.accessCode = '${widget.paymentSheetParameters?.accessCode}';
         onConsoleMessage: (controller, consoleMessage) {
           print("JS Console: ${consoleMessage.message}");
         },
+        
       ),
     );
   }

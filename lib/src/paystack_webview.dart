@@ -77,6 +77,7 @@ class PaystackWebview {
     if (context.mounted) {
       return await showModalBottomSheet<void>(
           context: context,
+          useSafeArea: true,
           enableDrag: enableDrag,
           isDismissible: isDismissible,
           isScrollControlled: isScrollControlled,
