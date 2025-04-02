@@ -49,7 +49,7 @@ class _HTMLViewState extends State<HTMLView> {
                 );
 
                 if (popupIframes.length > 0) {
-                let timeoutId;
+                  let timeoutId;
 
                   const lastContainer = popupIframes[popupIframes.length - 1];
 
@@ -62,7 +62,6 @@ class _HTMLViewState extends State<HTMLView> {
                         mutation.attributeName === "style"
                       ) {
                         if (lastContainer.style['display'] == 'none' && lastContainer.style['visibility'] == 'hidden') {
-                          
                           clearTimeout(timeoutId);
                           timeoutId = setTimeout(() => {
                             window.flutter_inappwebview.callHandler('closePaymentHandler');
@@ -88,7 +87,7 @@ class _HTMLViewState extends State<HTMLView> {
         ),
         onWebViewCreated: (controller) {
           webViewController = controller;
-          
+
           controller.addJavaScriptHandler(
             handlerName: 'closePaymentHandler',
             callback: (args) {
@@ -106,7 +105,6 @@ window.accessCode = '${widget.paymentSheetParameters?.accessCode}';
         onConsoleMessage: (controller, consoleMessage) {
           print("JS Console: ${consoleMessage.message}");
         },
-        
       ),
     );
   }
