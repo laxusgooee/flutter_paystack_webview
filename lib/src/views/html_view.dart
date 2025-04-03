@@ -103,7 +103,7 @@ window.accessCode = '${widget.paymentSheetParameters?.accessCode}';
     """);
         },
         onConsoleMessage: (controller, consoleMessage) {
-          print("JS Console: ${consoleMessage.message}");
+          debugPrint("JS Console: ${consoleMessage.message}");
         },
       ),
     );
